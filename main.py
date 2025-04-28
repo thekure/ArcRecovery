@@ -15,6 +15,11 @@ class ModuleViewerApp(QWidget):
         self.setWindowTitle("Module Viewer")
         self.setGeometry(100, 100, 1200, 800)
 
+        # Initialize attributes
+        self.repo_manager = None
+        self.analyzer = None
+        self.graph_view = None
+
         # Main layout will be horizontal split
         self.main_layout = QHBoxLayout()
         
@@ -92,11 +97,16 @@ class ModuleViewerApp(QWidget):
                                  if not regex.match(node)]
                 filtered_graph.remove_nodes_from(nodes_to_remove)
                 
-                # Update the visualization
-                self.graph_layout.removeWidget(self.graph_view)
-                self.graph_view.deleteLater()
-                self.graph_view = GraphView(filtered_graph)
-                self.graph_layout.addWidget(self.graph_view)
+                # Only update if we have nodes left
+                if len(filtered_graph.nodes()) > 0:
+                    # Update the visualization
+                    self.graph_layout.removeWidget(self.graph_view)
+                    self.graph_view.deleteLater()
+                    self.graph_view = GraphView(filtered_graph)
+                    self.graph_layout.addWidget(self.graph_view)
+                    self.result_label.setText(f"Showing {len(filtered_graph.nodes())} matching modules")
+                else:
+                    self.result_label.setText("No modules match the filter pattern")
         except re.error:
             self.result_label.setText("Invalid regex pattern")
 
@@ -135,19 +145,29 @@ class ModuleViewerApp(QWidget):
 
         try:
             python_files = self.repo_manager.find_python_files()
+            if not python_files:
+                self.result_label.setText("No Python files found in the repository.")
+                return
+
             self.analyzer = DependencyAnalyzer(self.repo_manager.get_repo_path())
-            graph = self.analyzer.build_dependency_graph(python_files)
-            self.result_label.setText(f"Success! {len(graph.nodes)} modules found.")
+            try:
+                graph = self.analyzer.build_dependency_graph(python_files)
+                self.result_label.setText(f"Success! {len(graph.nodes)} modules found.")
 
-            if self.graph_view:
-                self.graph_layout.removeWidget(self.graph_view)
-                self.graph_view.deleteLater()
+                if self.graph_view:
+                    self.graph_layout.removeWidget(self.graph_view)
+                    self.graph_view.deleteLater()
 
-            self.graph_view = GraphView(graph)
-            self.graph_layout.addWidget(self.graph_view)
+                self.graph_view = GraphView(graph)
+                self.graph_layout.addWidget(self.graph_view)
+
+            except ValueError as e:
+                self.result_label.setText(f"Analysis error: {str(e)}")
+            except Exception as e:
+                self.result_label.setText(f"Unexpected error during analysis: {str(e)}")
 
         except Exception as e:
-            self.result_label.setText(f"Error analysing repository: {str(e)}")
+            self.result_label.setText(f"Error accessing repository: {str(e)}")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
