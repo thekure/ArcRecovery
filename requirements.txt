@@ -1,2 +1,4 @@
-PyQt5==5.15.11
-networkx==2.8.8 
+networkx==3.1
+matplotlib==3.7.2
+PyQt5==5.15.9
+pytest==7.4.0 

@@ -15,9 +15,6 @@ def run_with_gui():
 def main():
     # run_with_gui()
     G = build_data_structure()
-    print(len(G.nodes))
-    for node in sorted(G.nodes):
-        print(node)
     # draw_graph(G, (10, 10))
 
 

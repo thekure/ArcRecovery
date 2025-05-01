@@ -1,4 +1,7 @@
 import os
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from common import file_path, get_parent_module, module_name_from_file_path
 from imports_helper import import_from_line, imports_from_file
 

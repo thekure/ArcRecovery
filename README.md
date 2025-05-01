@@ -1,60 +1,59 @@
-# Module Viewer
+# ArcRecovery
 
-A Python application for visualizing module dependencies in Python projects.
+ArcRecovery is a tool for analyzing Python codebases to extract module dependencies and build a dependency graph. It helps you understand the architecture and relationships between different modules in a Python project.
 
-## Overview
+## Features
 
-Module Viewer allows you to:
+- Extract module dependencies from Python files
+- Build a directed graph of module dependencies
+- Identify internal vs external dependencies
+- Analyze module relationships and architecture
 
-- Clone a GitHub repository
-- Analyze Python dependencies between modules
-- Visualize the dependency graph
-- Filter modules based on various criteria
-- Navigate through package hierarchies
-- Explore module relationships
+## Project Structure
 
-## Application Structure
+- `module.py`: Defines the `Module` class for representing Python modules
+- `common.py`: Shared utility functions for path handling and module name extraction
+- `imports_helper.py`: Functions for parsing Python imports from files
+- `graph_builder.py`: Functions for building the dependency graph
+- `scanner_tests.py`: Test cases for the dependency scanning functionality
+- `main.py`: Entry point for running the tool
 
-The application follows the Model-View-Controller (MVC) pattern:
+## Installation
 
+1. Clone the repository:
 ```
-Module Viewer/
-├── models/                  # Data handling and business logic
-│   ├── __init__.py
-│   └── repository_model.py  # Handles repository and dependency data
-├── views/                   # User interface components
-│   ├── __init__.py
-│   ├── main_view.py         # Main application window and controls
-│   └── graph_view.py        # Graph visualization component
-├── controllers/             # Application logic connecting models and views
-│   ├── __init__.py
-│   └── main_controller.py   # Main controller coordinating actions
-├── main.py                  # Application entry point
-└── README.md                # Documentation
+git clone https://github.com/yourusername/ArcRecovery.git
+cd ArcRecovery
+```
+
+2. Create a virtual environment and install dependencies:
+```
+python -m venv Arch
+source Arch/bin/activate  # On Windows: Arch\Scripts\activate
+pip install -r requirements.txt
+```
+
+## Usage
+
+Run the main application:
+```
+python main.py
+```
+
+Run the tests:
+```
+python scanner_tests.py
 ```
 
 ## How It Works
 
-1. **Clone Repository**: The application can clone a GitHub repository to analyze.
-2. **Analyze Dependencies**: It scans the Python files and builds a dependency graph.
-3. **Visualize Dependencies**: The graph view shows modules as nodes and dependencies as edges.
-4. **Filter**: You can filter modules by name pattern, external dependencies, and connectivity.
-5. **Navigation**: You can drill down into packages to explore their internal structure.
+The tool scans Python files in the specified code root folder, extracts import statements, and builds a directed graph where:
+- Nodes represent Python modules
+- Edges represent dependencies between modules
+- Each module tracks its internal dependencies
 
-## Dependencies
+## Customization
 
-- PyQt5: For the graphical user interface
-- NetworkX: For graph data structures and algorithms
-
-## Running the Application
-
-```bash
-python main.py
-```
-
-## Future Improvements
-
-- Enhanced dependency detection
-- Support for more repository sources
-- Export functionality
-- Performance improvements for large codebases 
+You can customize the analysis by modifying:
+- `CODE_ROOT_FOLDER` in `constants.py` to specify the root folder of the codebase to analyze
+- Functions in `graph_builder.py` to change how the dependency graph is constructed 

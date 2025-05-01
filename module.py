@@ -4,6 +4,8 @@ class Module:
         self.parent_module = parent_module
         self.file_path = file_path
         self.dependencies = set()
+        self.is_package = False
+        self.depth = 0
 
     def get_dependencies(self):
         return self.dependencies
