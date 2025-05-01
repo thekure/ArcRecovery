@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 import sys
 from PyQt5.QtWidgets import QApplication
-from graph_builder import build_data_structure, draw_graph
-from gui.main_window import MainWindow
+from Model.graph_builder import get_dependencies_digraph, draw_graph
+from GUI.main_window import MainWindow
+from Model.module import Module
+from Model.common import module_name_from_file_path, file_path_from_module_name, get_parent_module
+from Model.imports_helper import imports_from_file
 
 
 def run_with_gui():
@@ -14,7 +17,7 @@ def run_with_gui():
 
 def main():
     # run_with_gui()
-    G = build_data_structure()
+    G = get_dependencies_digraph()
     # draw_graph(G, (10, 10))
 
 

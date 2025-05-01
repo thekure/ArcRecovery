@@ -1,4 +1,4 @@
-from common import get_parent_module, module_name_from_file_path
+from Model.common import get_parent_module, module_name_from_file_path
 from constants import CODE_ROOT_FOLDER
 import networkx as nx
 import matplotlib.pyplot as plt

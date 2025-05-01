@@ -2,7 +2,7 @@ import os
 import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from common import file_path_from_module_name, module_name_from_file_path
+from Model.common import file_path_from_module_name, module_name_from_file_path
 from constants import CODE_ROOT_FOLDER
 
 def test_file_path_from_module_name():

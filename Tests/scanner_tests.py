@@ -2,8 +2,8 @@ import os
 import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from common import file_path, get_parent_module, module_name_from_file_path
-from imports_helper import import_from_line, imports_from_file
+from Model.common import file_path, module_name_from_file_path
+from Model.imports_helper import import_from_line, imports_from_file
 
 
 def test_file_path():
@@ -306,7 +306,7 @@ def test_import_from_line():
 
 def test_parent_module_extraction():
     """Test the get_parent_module function with various module name formats."""
-    from common import get_parent_module
+    from Model.common import get_parent_module
     import io
     import sys
     

@@ -1,15 +1,15 @@
 import os
-from module import Module
+from .module import Module
 from matplotlib import pyplot as plt
 import networkx as nx
 from pathlib import Path
 
-from common import file_path_from_module_name, get_parent_module, module_name_from_file_path
+from .common import file_path_from_module_name, get_parent_module, module_name_from_file_path
 from constants import CODE_ROOT_FOLDER
-from imports_helper import imports_from_file
+from .imports_helper import imports_from_file
 
-def build_data_structure():
-    G = dependencies_digraph()
+def get_dependencies_digraph():
+    G = build_graph()
     G = set_package_flags(G)
     G = set_depth(G)
     return G
@@ -29,7 +29,7 @@ def get_top_level_packages():
     return dirs
 
 
-def dependencies_digraph():
+def build_graph():
     print(f"Building dependencies digraph...")
     files = Path(CODE_ROOT_FOLDER).rglob("*.py")
     G = nx.DiGraph()
