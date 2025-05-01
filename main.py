@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 import sys
 from PyQt5.QtWidgets import QApplication
+from graph_builder import build_data_structure, draw_graph
 from gui.main_window import MainWindow
-from scanner import file_path, imports_from_file, module_name_from_file_path
-from graph_builder import build_data_structure, dependencies_digraph
+
 
 def run_with_gui():
     app = QApplication(sys.argv)
@@ -14,7 +14,11 @@ def run_with_gui():
 
 def main():
     # run_with_gui()
-    build_data_structure()
+    G = build_data_structure()
+    print(len(G.nodes))
+    for node in sorted(G.nodes):
+        print(node)
+    # draw_graph(G, (10, 10))
 
 
 

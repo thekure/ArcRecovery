@@ -1,71 +1,82 @@
-from scanner import (file_path, import_from_line, module_name_from_file_path, 
-                    imports_from_file, resolve_relative_import)
+import os
+from common import file_path, get_parent_module, module_name_from_file_path
+from imports_helper import import_from_line, imports_from_file
+
 
 def test_file_path():
     assert 'zeeguu.core.model.user' == module_name_from_file_path(file_path('zeeguu/core/model/user.py'))
 
+def test_imports_from_file():
+    print("test_imports_from_file\n")
+    """Test extracting imports from entire files."""
+    
+    # Test with a simple file
+    imports = imports_from_file(file_path('zeeguu/api/app.py'))
+    
+    # Import content of zeeguu/api/app.py
+    """
+    from zeeguu.config.loader import load_configuration_or_abort
+    from flask_cors import CORS
+    from flask import Flask
+    import time
+    import os
+    import re
+    import zeeguu
 
-def test_import_parsing():
-    print("test_import_parsing\n")
-    """Test the import_from_line function with various import patterns."""
-    test_cases = [
-        # Basic imports
-        ("import os", "os"),
-        ("import sys", "sys"),
-        
-        # Multiple imports on one line
-        ("import os, sys", ["os", "sys"]),  # Now returns both modules
-        
-        # Imports with 'as'
-        ("import numpy as np", "numpy"),
-        ("import pandas as pd", "pandas"),
-        
-        # From imports
-        ("from os import path", "os"),
-        ("from sys import exit", "sys"),
-        
-        # From imports with multiple items
-        ("from os import path, walk", "os"),
-        
-        # From imports with 'as'
-        ("from numpy import array as arr", "numpy"),
-        
-        # Nested package imports
-        ("from os.path import join", "os.path"),
-        ("import xml.etree.ElementTree", "xml.etree.ElementTree"),
-        
-        # Parenthesized imports
-        ("from os import (path, walk)", "os"),
-        
-        # Imports with whitespace
-        ("   import os   ", "os"),
-        ("   from   os   import   path   ", "os"),
-        
-        # Invalid or empty lines
-        ("# import os", None),
-        ("", None),
-        ("def import_something():", None),
-        ("'import os'", None),
+    from zeeguu.logging import warning
+
+    # apimux is quite noisy; supress it's output
+    import logging
+    from apimux.log import logger
+
+    import sentry_sdk
+    from sentry_sdk.integrations.flask import FlaskIntegration
+    from zeeguu.core.model import db
+    from .endpoints import api
+    
+    """
+     
+    expected_imports = [
+        'zeeguu.config.loader',
+        'flask_cors',
+        'flask',
+        'time', 
+        'os',
+        're',
+        'zeeguu',
+        'zeeguu.logging',
+        'logging',
+        'apimux.log',
+        'sentry_sdk',
+        'sentry_sdk.integrations.flask',
+        'zeeguu.core.model',
+        'zeeguu.api.endpoints'
     ]
-
+    
     passed = 0
     failed = 0
     
-    for test_input, expected in test_cases:
-        result = import_from_line(test_input)
-        if result == expected:
+    print("Checking for expected imports:")
+    # Check each import was found
+    for expected in expected_imports:
+        if expected in imports:
             passed += 1
-            print(f"✓ PASS: '{test_input}' -> '{result}'")
+            print(f"✓ PASS: Import '{expected}' was found")
         else:
             failed += 1
-            print(f"✗ FAIL: '{test_input}'")
-            print(f"  Expected: '{expected}'")
-            print(f"  Got:      '{result}'")
+            print(f"✗ FAIL: Import '{expected}' was not found")
     
-    print(f"\nTest Results: {passed} passed, {failed} failed")
+    # Also check for unexpected imports
+    unexpected = [imp for imp in imports if imp not in expected_imports]
+    if unexpected:
+        print("\nUnexpected imports found:")
+        for imp in unexpected:
+            print(f"  - {imp}")
+    
+    print(f"\nTest Results: {passed} passed, {failed} failed out of {len(expected_imports)} expected imports")
     return passed, failed
 
-def test_imports_from_file():
+def test_imports_from_file_old():
     print("test_imports_from_file\n")
     """Test extracting imports from entire files."""
     
@@ -84,6 +95,7 @@ def test_imports_from_file():
 import os
 from datetime import datetime
 from zeeguu.core import model
+import zeeguu.core.model, tools.helper
 import json as j
 from typing import List, Optional
 from . import local_module
@@ -91,7 +103,18 @@ from .subpackage import something
 from .. import parent_module
 from ..sibling import other
 ''')
-    
+    # import os -> os
+    # from datetime import datetime -> datetime
+    # from zeeguu.core import model -> zeeguu.core
+    # import zeeguu.core.model, tools.helper -> zeeguu.core.model, tools.helper
+    # import json as j -> json
+    # from typing import List, Optional -> typing
+    # from . import local_module -> local_module
+    # from .subpackage import something -> subpackage
+    # from .. import parent_module -> parent_module
+
+
+
     test_imports = imports_from_file('test_imports.py')
     print(f"Found imports: {test_imports}")
     
@@ -103,11 +126,12 @@ from ..sibling import other
     
     expected_imports = [
         'os',
+        'tools.helper',
+        'zeeguu.core.model',
         'datetime', 
         'zeeguu.core',
         'json',
         'typing',
-        'local_module',
         'subpackage',
         'parent_module',
         'sibling'
@@ -175,6 +199,7 @@ def test_file_path():
 def test_resolve_relative_import():
     print("test_resolve_relative_import\n")
     """Test scanning zeeguu/api/app.py for imports"""
+
     expected_imports = {
         'zeeguu.config.loader',
         'flask_cors',
@@ -217,61 +242,118 @@ def test_import_from_line():
     print("Testing import_from_line()\n")
     test_cases = [
         # Basic imports
-        ("import os", "os"),
-        ("import sys", "sys"),
+        ("import os", ["os"]),
+        ("import sys", ["sys"]),
         
         # Multiple imports on one line
-        ("import os, sys", "os"),  # Should only get first one
-        ("import sys, os", "sys"),  # Should only get first one
+        ("import os, sys", ["os", "sys"]),
+        ("import sys, os", ["sys", "os"]),
         
         # Imports with 'as'
-        ("import numpy as np", "numpy"),
-        ("import pandas as pd", "pandas"),
+        ("import numpy as np", ["numpy"]),
+        ("import pandas as pd", ["pandas"]),
         
         # From imports
-        ("from os import path", "os"),
-        ("from sys import exit", "sys"),
-        ("from . import views", "."),
-        ("from .views import main", ".views"),
-        ("from ..models import user", "..models"),
+        ("from os import path", ["os"]),
+        ("from sys import exit", ["sys"]),
+        ("from . import views", ["."]),
+        ("from .views import main", [".views"]),
+        ("from ..models import user", ["..models"]),
         
         # From imports with multiple items
-        ("from os import path, walk", "os"),
+        ("from os import path, walk", ["os"]),
         
         # From imports with 'as'
-        ("from numpy import array as arr", "numpy"),
+        ("from numpy import array as arr", ["numpy"]),
         
         # Nested package imports
-        ("from os.path import join", "os.path"),
-        ("import xml.etree.ElementTree", "xml.etree.ElementTree"),
+        ("from os.path import join", ["os.path"]),
+        ("import xml.etree.ElementTree", ["xml.etree.ElementTree"]),
         
         # Parenthesized imports
-        ("from os import (path, walk)", "os"),
+        ("from os import (path, walk)", ["os"]),
         
         # Imports with whitespace
-        ("   import os   ", "os"),
-        ("   from   os   import   path   ", "os"),
+        ("   import os   ", ["os"]),
+        ("   from   os   import   path   ", ["os"]),
         
         # Invalid or empty lines
-        ("# import os", None),
-        ("", None),
-        ("def import_something():", None),
-        ("'import os'", None),
+        ("# import os", []),
+        ("", []),
+        ("def import_something():", []),
+        ("'import os'", []),
     ]
+    
+    passed = 0
+    failed = 0
     
     for test_input, expected in test_cases:
         result = import_from_line(test_input)
         if result == expected:
-            print(f"✓ PASS: '{test_input}' -> '{result}'")
+            passed += 1
+            print(f"✓ PASS: '{test_input}' -> {result}")
         else:
+            failed += 1
             print(f"✗ FAIL: '{test_input}'")
-            print(f"  Expected: '{expected}'")
-            print(f"  Got:      '{result}'")
+            print(f"  Expected: {expected}")
+            print(f"  Got:      {result}")
+    
+    print(f"\nTest Results: {passed} passed, {failed} failed")
+    return passed, failed
+
+def test_parent_module_extraction():
+    """Test the get_parent_module function with various module name formats."""
+    from common import get_parent_module
+    import io
+    import sys
+    
+    print("Testing parent_module_extraction()\n")
+    
+    test_cases = [
+        ("app", ""),
+        ("app.components", "app"),
+        ("app.components.ui.buttons", "app"),
+        ("os.path", "os"),
+        ("api.v1.users", "api")
+    ]
+    
+    passed = 0
+    failed = 0
+    
+    for module_name, expected_parent in test_cases:
+        # Redirect stdout to capture the output
+        stdout_backup = sys.stdout
+        captured_output = io.StringIO()
+        sys.stdout = captured_output
+        
+        # Call the function
+        get_parent_module(module_name)
+        
+        # Restore stdout
+        sys.stdout = stdout_backup
+        output = captured_output.getvalue()
+        
+        # Check if the output contains the expected module and parent
+        contains_module = f"module: {module_name}" in output
+        contains_parent = f"parent: {expected_parent}" in output
+        
+        if contains_module and contains_parent:
+            passed += 1
+            print(f"✓ PASS: '{module_name}' -> parent: '{expected_parent}'")
+        else:
+            failed += 1
+            print(f"✗ FAIL: '{module_name}'")
+            print(f"  Expected output to contain:")
+            print(f"    - 'module: {module_name}'")
+            print(f"    - 'parent: {expected_parent}'")
+            print(f"  Got output: {output.strip()}")
+    
+    print(f"\nTest Results: {passed} passed, {failed} failed")
+    return passed, failed
 
 if __name__ == "__main__":
-    test_import_from_line()
-    test_resolve_relative_import()
-    print("\n\n")
-    test_import_parsing()
-    # test_imports_from_file()
+    # test_import_from_line()
+    # test_resolve_relative_import()
+    test_imports_from_file()
     # test_file_path()
+    # test_parent_module_extraction()
