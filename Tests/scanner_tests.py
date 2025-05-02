@@ -241,6 +241,89 @@ def test_resolve_relative_import():
     
     assert actual_imports == expected_imports, "Imports don't match expected set"
 
+def test_resolve_relative_import_2():
+    print("test_resolve_relative_import_2\n")
+    """Test scanning zeeguu/core/model/__init__.py for imports"""
+
+    expected_imports = {
+        'flask_sqlalchemy',
+        'zeeguu',
+        'zeeguu.core.model.article_fragment',
+        'zeeguu.core.model.article_url_keyword_map',
+        'zeeguu.core.model.article_topic_map',
+        'zeeguu.core.model.user_cohort_map',
+        'zeeguu.core.model.language',
+        'zeeguu.core.model.url',
+        'zeeguu.core.model.domain_name',
+        'zeeguu.core.model.article',
+        'zeeguu.core.model.bookmark',
+        'zeeguu.core.model.text',
+        'zeeguu.core.model.user_word',
+        'zeeguu.core.model.user_preference',
+        'zeeguu.core.model.session',
+        'zeeguu.core.model.unique_code',
+        'zeeguu.core.model.article_broken_code_map',
+        'zeeguu.core.model.article_fragment_context',
+        'zeeguu.core.model.article_title_context',
+        'zeeguu.core.model.user',
+        'zeeguu.core.model.cohort',
+        'zeeguu.core.model.user_language',
+        'zeeguu.core.model.user_article',
+        'zeeguu.core.model.article_difficulty_feedback',
+        'zeeguu.core.model.feed',
+        'zeeguu.core.model.url_keyword',
+        'zeeguu.core.model.search',
+        'zeeguu.core.model.search_filter',
+        'zeeguu.core.model.search_subscription',
+        'zeeguu.core.model.exercise',
+        'zeeguu.core.model.exercise_outcome',
+        'zeeguu.core.model.exercise_source',
+        'zeeguu.core.model.user_activitiy_data',
+        'zeeguu.core.model.teacher_cohort_map',
+        'zeeguu.core.model.teacher',
+        'zeeguu.core.model.cohort_article_map',
+        'zeeguu.core.model.topic',
+        'zeeguu.core.model.topic_subscription',
+        'zeeguu.core.model.topic_filter',
+        'zeeguu.core.model.user_reading_session',
+        'zeeguu.core.model.user_exercise_session',
+        'zeeguu.core.model.word_to_study',
+        'zeeguu.core.word_scheduling.basicSR.basicSR',
+        'zeeguu.core.model.personal_copy',
+        'zeeguu.core.model.difficulty_lingo_rank',
+        'zeeguu.core.model.yt_channel',
+        'zeeguu.core.model.video',
+        'zeeguu.core.model.caption',
+        'zeeguu.core.model.video_tag',
+        'zeeguu.core.model.video_tag_map',
+        'zeeguu.core.model.video_caption_context',
+        'zeeguu.core.model.video_title_context',
+        'zeeguu.core.model.video_topic_map',
+        'zeeguu.core.model.user_video',
+        'zeeguu.core.model.user_watching_session',
+    }
+    
+    # Get actual imports from the file
+    actual_imports = set(imports_from_file('repo_for_analysis/zeeguu/core/model/__init__.py'))
+    
+    print("\nExpected imports:")
+    for imp in sorted(expected_imports):
+        print(f"  {imp}")
+        
+    print("\nActual imports found:")
+    for imp in sorted(actual_imports):
+        print(f"  {imp}")
+        
+    print("\nMissing imports:")
+    for imp in expected_imports - actual_imports:
+        print(f"  {imp}")
+        
+    print("\nExtra imports found:")
+    for imp in actual_imports - expected_imports:
+        print(f"  {imp}")
+    
+    assert actual_imports == expected_imports, "Imports don't match expected set"
+
 def test_import_from_line():
     print("Testing import_from_line()\n")
     test_cases = [
@@ -357,6 +440,7 @@ def test_parent_module_extraction():
 if __name__ == "__main__":
     # test_import_from_line()
     # test_resolve_relative_import()
-    test_imports_from_file()
+    # test_imports_from_file()
     # test_file_path()
     # test_parent_module_extraction()
+    test_resolve_relative_import_2()

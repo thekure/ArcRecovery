@@ -5,10 +5,12 @@ import matplotlib.pyplot as plt
 import re
 
 
-def resolve_relative_import(importing_file, relative_import):
+def resolve_relative_import(importing_file_path, relative_import):
     """Resolve a relative import to its full module name."""
     # Get the package path of the importing file
-    package_path = module_name_from_file_path(importing_file)
+    package_path = module_name_from_file_path(importing_file_path)
+    if "__init__" in importing_file_path:
+        package_path += ".__init__"
     package_parts = package_path.split('.')
     
     # Count leading dots to determine how many levels to go up
@@ -78,14 +80,14 @@ def import_from_line(line):
     
     return result  # Return empty list if no matches
 
-def imports_from_file(file):
+def imports_from_file(file_path):
     """Extract all imported modules from a Python file.
     
     Returns a list of module names (e.g., ['os', 'datetime', 'zeeguu.core'])
     """
     all_imports = []
     
-    with open(file) as f:
+    with open(file_path) as f:
         lines = f.readlines()
         
     for line in lines:
@@ -96,7 +98,7 @@ def imports_from_file(file):
                 if imported_modules:
                     for module in imported_modules:
                         if module.startswith('.'):
-                            resolved = resolve_relative_import(file, module)
+                            resolved = resolve_relative_import(file_path, module)
                             all_imports.append(resolved)
                         else:
                             all_imports.append(module)
@@ -105,7 +107,7 @@ def imports_from_file(file):
             if imported_modules:
                 for module in imported_modules:
                     if module.startswith('.'):
-                        resolved = resolve_relative_import(file, module)
+                        resolved = resolve_relative_import(file_path, module)
                         all_imports.append(resolved)
                     else:
                         all_imports.append(module)

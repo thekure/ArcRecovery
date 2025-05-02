@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
 import sys
 from PyQt5.QtWidgets import QApplication
-from Model.graph_builder import get_dependencies_digraph, draw_graph
+from Model.graph_builder import get_dependencies_digraph, draw_graph, print_module_tree
 from GUI.main_window import MainWindow
-from Model.module import Module
-from Model.common import module_name_from_file_path, file_path_from_module_name, get_parent_module
-from Model.imports_helper import imports_from_file
+from Model.hierarchy import ModuleHierarchy
 
 
 def run_with_gui():
@@ -16,8 +14,12 @@ def run_with_gui():
 
 
 def main():
-    # run_with_gui()
     G = get_dependencies_digraph()
+    H = ModuleHierarchy(G)
+
+
+
+
     # draw_graph(G, (10, 10))
 
 

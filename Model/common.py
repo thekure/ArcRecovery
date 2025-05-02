@@ -43,6 +43,7 @@ def file_path_from_module_name(module_name):
     Returns:
         str: File path corresponding to the module name
     """
+
     # Convert dots to directory separators
     path_parts = module_name.split('.')
     relative_path = os.path.join(*path_parts)
