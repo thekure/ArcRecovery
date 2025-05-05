@@ -18,12 +18,16 @@ def ensure_pyvis_assets_available():
     js_files = {
         "vis-network.min.js": "https://cdn.jsdelivr.net/npm/vis-network@9.1.2/dist/vis-network.min.js",
         "vis.min.js": "https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js",
+        "vis.js": "https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.js",
+        "utils.js": "https://cdn.jsdelivr.net/npm/vis-network@9.1.2/dist/dist/utils.js",
+        "bootstrap.bundle.min.js": "https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
     }
     
     # Required CSS files with their CDN URLs
     css_files = {
-        "vis-network.min.css": "https://cdn.jsdelivr.net/npm/vis-network@9.1.2/dist/vis-network.min.css",
-        "vis.min.css": "https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css", 
+        "vis-network.min.css": "https://cdn.jsdelivr.net/npm/vis-network@9.1.2/dist/dist/vis-network.min.css",
+        "vis.min.css": "https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css",
+        "bootstrap.min.css": "https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
     }
     
     downloaded_files = []
@@ -86,11 +90,22 @@ def ensure_pyvis_assets_available():
             except Exception as e:
                 print(f"Failed to download {css_file}: {str(e)}")
     
+    # Create a fallback copy of vis-network.min.css if it's missing but vis.min.css exists
+    if "vis-network.min.css" not in downloaded_files and "vis.min.css" in downloaded_files:
+        vis_css = os.path.join(ASSETS_FOLDER, "vis.min.css")
+        vis_network_css = os.path.join(ASSETS_FOLDER, "vis-network.min.css")
+        if os.path.exists(vis_css) and not os.path.exists(vis_network_css):
+            shutil.copy2(vis_css, vis_network_css)
+            downloaded_files.append("vis-network.min.css")
+            print("Created vis-network.min.css as a copy of vis.min.css")
+    
     # List all files in assets folder for verification
     print("\nAssets in folder:")
+    all_assets = []
     for file_name in os.listdir(ASSETS_FOLDER):
         file_path = os.path.join(ASSETS_FOLDER, file_name)
         file_size = os.path.getsize(file_path) / 1024  # Size in KB
+        all_assets.append(file_name)
         print(f"  - {file_name} ({file_size:.1f} KB)")
     
     if downloaded_files:
@@ -131,8 +146,14 @@ def fix_html_asset_references(html_file):
     assets_abs_path = os.path.abspath(ASSETS_FOLDER)
     print(f"Using assets path: {assets_abs_path}")
     
+    # Get a list of all available assets
+    available_assets = set()
+    if os.path.exists(ASSETS_FOLDER):
+        available_assets = set(os.listdir(ASSETS_FOLDER))
+    
     # Track replacements for debugging
     replacements = []
+    skipped = []
     
     # Handle JavaScript files
     for js_pattern in [r'src=[\'"]([^\'"]+\.js)[\'"]']:
@@ -142,8 +163,8 @@ def fix_html_asset_references(html_file):
             local_path = os.path.join(assets_abs_path, file_name)
             
             # Skip if the asset doesn't exist locally
-            if not os.path.exists(local_path):
-                print(f"Warning: Asset not found locally: {file_name}")
+            if file_name not in available_assets:
+                skipped.append(file_name)
                 continue
                 
             # Replace with local file URL
@@ -162,8 +183,8 @@ def fix_html_asset_references(html_file):
             local_path = os.path.join(assets_abs_path, file_name)
             
             # Skip if the asset doesn't exist locally
-            if not os.path.exists(local_path):
-                print(f"Warning: Asset not found locally: {file_name}")
+            if file_name not in available_assets:
+                skipped.append(file_name)
                 continue
                 
             # Replace with local file URL
@@ -185,7 +206,13 @@ def fix_html_asset_references(html_file):
             print(f"  - {old} → {new}")
         if len(replacements) > 5:
             print(f"  - ... and {len(replacements) - 5} more")
-    else:
-        print("No asset references replaced. Visualization may not display correctly.")
+    
+    # Only print skipped warnings if there are missing critical assets
+    critical_assets = {"vis-network.min.js", "vis-network.min.css", "vis.min.js", "vis.min.css"}
+    missing_critical = [asset for asset in skipped if asset in critical_assets]
+    if missing_critical:
+        print("WARNING: Missing critical assets that may affect visualization:")
+        for asset in missing_critical:
+            print(f"  - {asset}")
     
     return html_file 
