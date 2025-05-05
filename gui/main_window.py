@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel
+from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QSizePolicy
 from .components.repository_panel import RepositoryPanel
 from .components.filter_panel import FilterPanel
 from .components.navigation_panel import NavigationPanel
@@ -31,9 +31,16 @@ class MainWindow(QMainWindow):
         self.graph_layout = QVBoxLayout()
         self.graph_panel.setLayout(self.graph_layout)
         
+        # Set graph panel to expand and take all available space
+        self.graph_panel.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        
+        # Remove margins to maximize visualization area
+        self.graph_layout.setContentsMargins(0, 0, 0, 0)
+        self.graph_layout.setSpacing(0)
+        
         # Add panels to main layout
         self.main_layout.addWidget(self.control_panel)
-        self.main_layout.addWidget(self.graph_panel)
+        self.main_layout.addWidget(self.graph_panel, 1) # Give graph panel stretch priority
         
         # Add components
         self.repository_panel = RepositoryPanel()
@@ -42,6 +49,9 @@ class MainWindow(QMainWindow):
         
         # Add graph visualization panel
         self.graph_visualization_panel = GraphVisualizationPanel()
+        
+        # Set graph visualization panel to expand to full available area
+        self.graph_visualization_panel.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.graph_layout.addWidget(self.graph_visualization_panel)
         
         # Connect repository panel's analysis completion to the visualization panel
