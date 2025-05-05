@@ -13,14 +13,15 @@ from constants import HTML_OUTPUT_FOLDER, ASSETS_FOLDER
 from ..utils.pyvis_assets import ensure_pyvis_assets_available, fix_html_asset_references
 
 class CustomWebEnginePage(QWebEnginePage):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, panel=None):
         super().__init__(parent)
+        self.visualization_panel = panel
         
     def javaScriptConsoleMessage(self, level, message, line, source):
         # We use this to catch console messages from the HTML page
         # This is useful for debugging JavaScript issues
-        if 'click event' in message:
-            self.parent().handle_click_event(message)
+        if 'click event' in message and self.visualization_panel:
+            self.visualization_panel.handle_click_event(message)
 
 class GraphVisualizationPanel(QGroupBox):
     def __init__(self, parent=None):
@@ -71,7 +72,8 @@ class GraphVisualizationPanel(QGroupBox):
         self.web_view.setMinimumHeight(500)
         
         # Set up a custom page to handle JavaScript events
-        self.custom_page = CustomWebEnginePage(self.web_view)
+        # Pass this panel as the visualization_panel so the page can call back
+        self.custom_page = CustomWebEnginePage(self.web_view, panel=self)
         self.web_view.setPage(self.custom_page)
         
         # Fill the entire space with the web view
@@ -99,8 +101,15 @@ class GraphVisualizationPanel(QGroupBox):
                 node_data = json.loads(message[start_idx:])
                 node_id = node_data.get('id')
                 
+                # Add some protection for null/empty node ids
+                if not node_id:
+                    return
+                    
+                print(f"Click on node: {node_id}")
+                
                 # Check if the clicked node is a package
                 if self.is_package(node_id):
+                    print(f"Navigating to package: {node_id}")
                     self.navigate_to_package(node_id)
         except Exception as e:
             print(f"Error handling click event: {str(e)}")
@@ -317,7 +326,7 @@ class GraphVisualizationPanel(QGroupBox):
             # Save to the HTML output folder
             html_file = os.path.join(HTML_OUTPUT_FOLDER, "current_level_graph.html")
             
-            # Add click event handler to the HTML
+            # Generate the graph HTML
             net.save_graph(html_file)
             
             # Add JavaScript to handle clicks and send them to Python
