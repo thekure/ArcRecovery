@@ -1,59 +1,42 @@
 # ArcRecovery
 
-ArcRecovery is a tool for analyzing Python codebases to extract module dependencies and build a dependency graph. It helps you understand the architecture and relationships between different modules in a Python project.
+A tool for visualizing and analyzing dependencies in Python codebases.
 
 ## Features
 
-- Extract module dependencies from Python files
-- Build a directed graph of module dependencies
-- Identify internal vs external dependencies
-- Analyze module relationships and architecture
-
-## Project Structure
-
-- `module.py`: Defines the `Module` class for representing Python modules
-- `common.py`: Shared utility functions for path handling and module name extraction
-- `imports_helper.py`: Functions for parsing Python imports from files
-- `graph_builder.py`: Functions for building the dependency graph
-- `scanner_tests.py`: Test cases for the dependency scanning functionality
-- `main.py`: Entry point for running the tool
+- Clone GitHub repositories
+- Analyze code structure and dependencies
+- Visualize package/module dependencies using interactive graphs
+- Filter and navigate through complex codebases
 
 ## Installation
 
-1. Clone the repository:
-```
-git clone https://github.com/yourusername/ArcRecovery.git
-cd ArcRecovery
-```
+1. Clone this repository
+2. Install the required dependencies:
 
-2. Create a virtual environment and install dependencies:
-```
-python -m venv Arch
-source Arch/bin/activate  # On Windows: Arch\Scripts\activate
+```bash
 pip install -r requirements.txt
 ```
 
 ## Usage
 
-Run the main application:
-```
+Run the application with:
+
+```bash
 python main.py
 ```
 
-Run the tests:
-```
-python scanner_tests.py
-```
+### Basic workflow:
 
-## How It Works
+1. Enter a GitHub repository URL in the Repository Controls panel
+2. Click "Clone" to clone the repository
+3. Click "Analyze" to build the dependency graph
+4. The graph visualization will display the root-level modules and packages with their dependencies
 
-The tool scans Python files in the specified code root folder, extracts import statements, and builds a directed graph where:
-- Nodes represent Python modules
-- Edges represent dependencies between modules
-- Each module tracks its internal dependencies
+## Dependencies
 
-## Customization
-
-You can customize the analysis by modifying:
-- `CODE_ROOT_FOLDER` in `constants.py` to specify the root folder of the codebase to analyze
-- Functions in `graph_builder.py` to change how the dependency graph is constructed 
+- PyQt5: GUI framework
+- PyQtWebEngine: Web view for interactive visualizations
+- pyvis: Network visualization library
+- NetworkX: Graph manipulation and analysis
+- GitPython: Git repository handling 

@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLab
 from .components.repository_panel import RepositoryPanel
 from .components.filter_panel import FilterPanel
 from .components.navigation_panel import NavigationPanel
+from .components.graph_visualization_panel import GraphVisualizationPanel
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -25,7 +26,7 @@ class MainWindow(QMainWindow):
         self.control_panel.setLayout(self.control_layout)
         self.control_panel.setMaximumWidth(300)
         
-        # Right panel (empty but kept for layout)
+        # Right panel for graph visualization
         self.graph_panel = QWidget()
         self.graph_layout = QVBoxLayout()
         self.graph_panel.setLayout(self.graph_layout)
@@ -39,10 +40,21 @@ class MainWindow(QMainWindow):
         self.filter_panel = FilterPanel()
         self.navigation_panel = NavigationPanel()
         
+        # Add graph visualization panel
+        self.graph_visualization_panel = GraphVisualizationPanel()
+        self.graph_layout.addWidget(self.graph_visualization_panel)
+        
+        # Connect repository panel's analysis completion to the visualization panel
+        self.repository_panel.on_analysis_complete = self.on_analysis_complete
+        
         self.control_layout.addWidget(self.repository_panel)
         self.control_layout.addWidget(self.filter_panel)
         self.control_layout.addWidget(self.navigation_panel)
         
         # Status label
         self.result_label = QLabel("")
-        self.control_layout.addWidget(self.result_label) 
+        self.control_layout.addWidget(self.result_label)
+        
+    def on_analysis_complete(self, graph, hierarchy):
+        """Handle the analysis completion event by updating the visualization"""
+        self.graph_visualization_panel.set_graph_data(graph, hierarchy) 
