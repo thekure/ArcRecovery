@@ -17,12 +17,7 @@ def main():
     G = get_dependencies_digraph()
     H = ModuleHierarchy(G)
 
-
-
-
     # draw_graph(G, (10, 10))
-
-
 
 if __name__ == '__main__':
     main()

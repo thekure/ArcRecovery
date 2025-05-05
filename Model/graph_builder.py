@@ -74,8 +74,8 @@ def build_graph():
             if dependency_is_internal(dependency, top_level_packages):
                 if dependency not in G.nodes:
                     G.add_node(dependency, module=Module(dependency, get_parent_module(dependency), file_path))
-                    G.add_edge(source_module_name, dependency)
-                    G.nodes[source_module_name]['module'].dependencies.add(dependency)
+                G.add_edge(source_module_name, dependency)
+                G.nodes[source_module_name]['module'].dependencies.add(dependency)
 
     print(f"Nodes created: {len(G.nodes)}\n")
     return G
