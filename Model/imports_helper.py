@@ -1,7 +1,4 @@
 from Model.common import get_parent_module, module_name_from_file_path
-from constants import CODE_ROOT_FOLDER
-import networkx as nx
-import matplotlib.pyplot as plt
 import re
 
 
@@ -30,15 +27,6 @@ def resolve_relative_import(importing_file_path, relative_import):
 
 def import_from_line(line):
     """Extract imported module names from a line of Python code.
-    
-    Handles:
-    - import x
-    - import x as y
-    - import x, y, z
-    - from x import y
-    - from x import y as z
-    - from x import (y, z)
-    - from x.y.z import a
     
     Returns:
     - For 'import x, y, z': returns ['x', 'y', 'z']

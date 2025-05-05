@@ -7,12 +7,21 @@ from .components.graph_visualization_panel import GraphVisualizationPanel
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.navigation_panel = None
+        self.result_label = None
+        self.graph_visualization_panel = None
+        self.filter_panel = None
+        self.repository_panel = None
+        self.graph_layout = None
+        self.graph_panel = None
+        self.control_layout = None
+        self.control_panel = None
+        self.main_layout = None
         self.setWindowTitle("ArcRecovery")
         self.setGeometry(100, 100, 1200, 800)
         self.setup_ui()
         
     def setup_ui(self):
-        # Main widget
         main_widget = QWidget()
         self.setCentralWidget(main_widget)
         
@@ -30,10 +39,7 @@ class MainWindow(QMainWindow):
         self.graph_panel = QWidget()
         self.graph_layout = QVBoxLayout()
         self.graph_panel.setLayout(self.graph_layout)
-        
-        # Set graph panel to expand and take all available space
-        self.graph_panel.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        
+
         # Remove margins to maximize visualization area
         self.graph_layout.setContentsMargins(0, 0, 0, 0)
         self.graph_layout.setSpacing(0)
@@ -49,9 +55,6 @@ class MainWindow(QMainWindow):
         
         # Add graph visualization panel
         self.graph_visualization_panel = GraphVisualizationPanel()
-        
-        # Set graph visualization panel to expand to full available area
-        self.graph_visualization_panel.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.graph_layout.addWidget(self.graph_visualization_panel)
         
         # Connect repository panel's analysis completion to the visualization panel

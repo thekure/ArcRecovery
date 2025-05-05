@@ -3,6 +3,9 @@ from PyQt5.QtWidgets import QGroupBox, QVBoxLayout, QHBoxLayout, QPushButton, QL
 class NavigationPanel(QGroupBox):
     def __init__(self, parent=None):
         super().__init__("Navigation", parent)
+        self.root_button = None
+        self.back_button = None
+        self.current_location_label = None
         self.setup_ui()
         
     def setup_ui(self):

@@ -1,11 +1,9 @@
 from PyQt5.QtWidgets import QGroupBox, QVBoxLayout, QLabel, QMessageBox, QPushButton, QHBoxLayout
 from PyQt5.QtCore import QUrl
 from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEnginePage
-from PyQt5.QtCore import pyqtSlot
 import os
 import json
 from pyvis.network import Network
-from collections import defaultdict
 
 from Model.graph_builder import get_dependencies_digraph
 from Model.hierarchy import ModuleHierarchy
@@ -26,6 +24,11 @@ class CustomWebEnginePage(QWebEnginePage):
 class GraphVisualizationPanel(QGroupBox):
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.custom_page = None
+        self.web_view = None
+        self.path_label = None
+        self.home_button = None
+        self.back_button = None
         self.setup_ui()
         self.graph = None
         self.hierarchy = None

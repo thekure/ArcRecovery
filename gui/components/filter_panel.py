@@ -1,9 +1,11 @@
 from PyQt5.QtWidgets import (QGroupBox, QVBoxLayout, QPushButton, 
-                           QLineEdit, QLabel, QCheckBox)
+                           QLineEdit, QLabel)
 
 class FilterPanel(QGroupBox):
     def __init__(self, parent=None):
         super().__init__("Module Filters", parent)
+        self.module_filter_input = None
+        self.clear_filter_button = None
         self.setup_ui()
         
     def setup_ui(self):

@@ -2,7 +2,6 @@ import os
 import shutil
 import re
 import requests
-from urllib.parse import urlparse
 
 from constants import ASSETS_FOLDER
 
