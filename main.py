@@ -14,9 +14,9 @@ def run_with_gui():
 
 
 def main():
-    G = get_dependencies_digraph()
-    H = ModuleHierarchy(G)
-
+    # G = get_dependencies_digraph()
+    # H = ModuleHierarchy(G)
+    run_with_gui()
     # draw_graph(G, (10, 10))
 
 if __name__ == '__main__':

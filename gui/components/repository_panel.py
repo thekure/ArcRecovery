@@ -1,6 +1,8 @@
 from PyQt5.QtWidgets import (QGroupBox, QVBoxLayout, QPushButton, 
                            QLineEdit, QLabel, QMessageBox)
 import git
+
+from graph_builder import build_graph
 from ..utils.github_utils import is_valid_github_url, clone_repository, clear_repository
 from constants import CODE_ROOT_FOLDER
 import os
@@ -21,7 +23,8 @@ class RepositoryPanel(QGroupBox):
         
         # Repository buttons
         self.analyse_button = QPushButton("Analyse")
-        self.analyse_button.setEnabled(False)
+        self.analyse_button.clicked.connect(self.analyse_repository)
+        self.check_directory()
         layout.addWidget(self.analyse_button)
         
         self.clone_button = QPushButton("Clone")
@@ -62,3 +65,7 @@ class RepositoryPanel(QGroupBox):
             self.analyse_button.setEnabled(has_contents)
         else:
             self.analyse_button.setEnabled(False) 
+    
+    def analyse_repository(self):
+        # This is where we should build the graph
+        print("Analyzing repository...")
