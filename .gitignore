@@ -5,6 +5,8 @@
 
 .idea/
 repo_for_analysis/
+html_output/
+assets/
 *.DS_Store
 # User-specific files
 *.rsuser

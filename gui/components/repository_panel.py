@@ -2,7 +2,8 @@ from PyQt5.QtWidgets import (QGroupBox, QVBoxLayout, QPushButton,
                            QLineEdit, QLabel, QMessageBox)
 import git
 
-from graph_builder import build_graph
+from Model.graph_builder import get_dependencies_digraph
+from Model.hierarchy import ModuleHierarchy
 from ..utils.github_utils import is_valid_github_url, clone_repository, clear_repository
 from constants import CODE_ROOT_FOLDER
 import os
@@ -67,5 +68,11 @@ class RepositoryPanel(QGroupBox):
             self.analyse_button.setEnabled(False) 
     
     def analyse_repository(self):
-        # This is where we should build the graph
-        print("Analyzing repository...")
+        # Build the graph and hierarchy
+        graph = get_dependencies_digraph()
+        hierarchy = ModuleHierarchy(graph)
+        
+        # Signal that visualization should be updated
+        # This will be connected to the main window
+        if hasattr(self, 'on_analysis_complete') and callable(self.on_analysis_complete):
+            self.on_analysis_complete(graph, hierarchy)

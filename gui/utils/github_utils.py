@@ -2,7 +2,6 @@ import re
 import git
 import os
 import shutil
-from constants import CODE_ROOT_FOLDER
 
 def is_valid_github_url(url):
     github_pattern = r'^https?://github\.com/[a-zA-Z0-9-]+/[a-zA-Z0-9._-]+/?$'
